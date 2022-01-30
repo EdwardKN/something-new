@@ -23,48 +23,51 @@ var pixelSize = 50;
 
 var player = {
     x:-1000,
-    y:-1000
+    y:-1000,
+    speed:0,
+    speedMax:5,
+    vericalDirection:"",
+    horizontalDirection:""
 };
+window.addEventListener("click",function(event){
 
+})
 window.addEventListener("keydown",function(event){
     console.log(event.code);
 
     if(event.code === "KeyW") {
-        player.y+=pixelSize;
+        player.vericalDirection = "up"
     }
     if(event.code === "KeyS") {
-        player.y-=pixelSize;
+        player.vericalDirection = "down"
     }
     if(event.code === "KeyA") {
-        player.x+=pixelSize;
+        player.horizontalDirection = "left"
     }
     if(event.code === "KeyD") {
-        player.x-=pixelSize;
+        player.horizontalDirection = "right"
+    }
+})
+window.addEventListener("keyup",function(event){
+    console.log(event.code);
+
+    if(event.code === "KeyW") {
+        player.vericalDirection = ""
+    }
+    if(event.code === "KeyS") {
+        player.vericalDirection = ""
+    }
+    if(event.code === "KeyA") {
+        player.horizontalDirection = ""
+    }
+    if(event.code === "KeyD") {
+        player.horizontalDirection = ""
     }
 })
 function renderBackground(){
 
     bc.imageSmoothingEnabled = false;
     fc.imageSmoothingEnabled = false;
-
-    console.log("hej")
-    bc.clearRect(0,0,1920,1080)
-    for(let x = 0; x < 150; x++){
-        for(let y = 0; y < 150; y++){
-            bc.fillStyle = `rgba(${map[x][y]}, ${map[x][y]}, ${map[x][y]}, 1)`;
-            
-
-
-            
-
- 
-
-
-            bc.fillRect(x*1,y*1,1,1)
-
-
-        }
-    }
 
     for(var y = 0; y < height; y++) {
         for(var x = 0; x < width; x++) {
@@ -80,7 +83,7 @@ function renderBackground(){
                     g:128,
                     b:128
                 }
-            }else if(map[x][y] > 60){
+            }else if(map[x][y] > 70){
                 color = {
                     r:0,
                     g:128,
@@ -134,7 +137,8 @@ function renderBackground(){
 
 
 function renderForeground(){
-
+    fc.fillStyle = "black";
+    fc.fillRect(1920/2 - 25, 1080/2 - 50, 50,100)
 }
 
 function update(){
@@ -146,9 +150,40 @@ function update(){
     
     bc.drawImage(newCanvas, player.x,player.y,150*pixelSize,150*pixelSize);
 
-    
+    doWalk()
+
+    renderForeground()
 }
 
+function doWalk(){
+    if(player.vericalDirection === "up"){
+        player.y += player.speed;
+        if(player.speed < player.speedMax){
+            player.speed+=0.1;
+        }
+    }
+    if(player.vericalDirection === "down"){
+        player.y -= player.speed;
+        if(player.speed < player.speedMax){
+            player.speed+=0.1;
+        }
+    }
+    if(player.horizontalDirection === "left"){
+        player.x += player.speed;
+        if(player.speed < player.speedMax){
+            player.speed+=0.1;
+        }
+    }
+    if(player.horizontalDirection === "right"){
+        player.x -= player.speed;
+        if(player.speed < player.speedMax){
+            player.speed+=0.1;
+        }
+    }
+    if(player.horizontalDirection === "" && player.vericalDirection === ""){
+        player.speed = 1;
+    }
+}
 
 function generateMap(){
     for(let x = 0; x < 150; x++){
