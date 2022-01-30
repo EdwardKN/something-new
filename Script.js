@@ -29,6 +29,33 @@ var player = {
     vericalDirection:"",
     horizontalDirection:""
 };
+var mouse = {
+    x:0,
+    y:0,
+    blockX:0,
+    blockY:0
+};
+
+
+var fps = undefined;
+
+var fpsMultiplier = fps / 60;
+
+setTimeout(() => {
+    png_font.setup(
+        document.getElementById("foreground").getContext("2d"));
+}, 10);
+
+
+foreCanvas.addEventListener("mousemove",function(event){
+    console.log(event)
+
+    mouse.x = event.clientX
+    mouse.y = event.clientY
+
+    renderCursor();
+})
+
 window.addEventListener("click",function(event){
 
 })
@@ -83,7 +110,7 @@ function renderBackground(){
                     g:128,
                     b:128
                 }
-            }else if(map[x][y] > 70){
+            }else if(map[x][y] > 80){
                 color = {
                     r:0,
                     g:128,
@@ -137,13 +164,33 @@ function renderBackground(){
 
 
 function renderForeground(){
+    fc.clearRect(0,0,1920,1080)
+
+    
     fc.fillStyle = "black";
     fc.fillRect(1920/2 - 25, 1080/2 - 50, 50,100)
+
+    fc.fillRect(mouse.blockX,mouse.blockY,50,50)
+
 }
 
-function update(){
+function renderCursor(){
+    let oldBlX = mouse.blockX
+    let oldBlY = mouse.blockY
 
-    requestAnimationFrame(update);
+    mouse.blockX = (mouse.x) - ((mouse.x-player.x ) % 50)
+    mouse.blockY = (mouse.y) - ((mouse.y-player.y ) % 50)
+
+    
+    if(oldBlX !== mouse.blockX || oldBlY !== mouse.blockY){
+
+
+        renderForeground();
+
+    }
+
+}
+function update(){
 
     bc.fillStyle = "blue";
     bc.fillRect(0,0,1920,1080);
@@ -152,36 +199,45 @@ function update(){
 
     doWalk()
 
-    renderForeground()
+    fc.clearRect(0,0,100,50);
+
+    fc.font = "20px Arial";
+    fc.fillStyle = "black";
+    fc.fillText("FPS:"+fpsMultiplier*60,10,20);
+
 }
+renderForeground();
+
 
 function doWalk(){
     if(player.vericalDirection === "up"){
-        player.y += player.speed;
+        player.y += player.speed *fpsMultiplier;
         if(player.speed < player.speedMax){
             player.speed+=0.1;
         }
     }
     if(player.vericalDirection === "down"){
-        player.y -= player.speed;
+        player.y -= player.speed*fpsMultiplier;
         if(player.speed < player.speedMax){
             player.speed+=0.1;
         }
     }
     if(player.horizontalDirection === "left"){
-        player.x += player.speed;
+        player.x += player.speed*fpsMultiplier;
         if(player.speed < player.speedMax){
             player.speed+=0.1;
         }
     }
     if(player.horizontalDirection === "right"){
-        player.x -= player.speed;
+        player.x -= player.speed*fpsMultiplier;
         if(player.speed < player.speedMax){
             player.speed+=0.1;
         }
     }
     if(player.horizontalDirection === "" && player.vericalDirection === ""){
         player.speed = 1;
+    }else{
+        renderCursor();
     }
 }
 
@@ -220,6 +276,40 @@ setTimeout(() => {
 
 }, 1000);
 
+function updateFPS(thisFps) {
+    clearInterval(interval1);
+    interval1 = undefined;
+    interval1 = setInterval(update, 1000 / thisFps);
+    fpsMultiplier = thisFps / 60;
+}
+
+interval1 = setInterval(update, 1000 / fps);
+
+setInterval(() => {
+    fps = oldCount - oldCount3;
+    oldCount3 = oldCount;
+    if (fps !== oldFPS) {
+        updateFPS(fps)
+    }
+    oldFPS = fps;
+}, 1000);
+
+var oldFPS = 0;
+
+var oldCount3 = 0;
+var oldCount2 = 0;
+var oldCount = 0;
+
+count()
+
+function count() {
+    requestAnimationFrame(count)
+
+    oldCount = oldCount2;
+    oldCount2++;
+    return oldCount;
+
+}
 
 function makePositive(a){
     if (a < 0) {
