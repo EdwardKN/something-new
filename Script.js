@@ -18,7 +18,9 @@ var buffer = new Uint8ClampedArray(width * height * 4);
 var newCanvas;
 
 var pixelSize = 50;
-var seed = Math.floor(Math.random() * 1000000000)
+var seed = Math.Floor(Math.random() * 1000000000)
+
+seed = 3
 
 var player = {
     x:-1000,
@@ -103,13 +105,13 @@ function renderBackground(){
                 b:128
             }
         
-            if(map[x][y] > 180 && map[x][y]<255){
+            if(map[x][y] > 120 && map[x][y]<255){
                 color = {
                     r:128,
                     g:128,
                     b:128
                 }
-            }else if(map[x][y] > 60){
+            }else if(map[x][y] > 50){
                 color = {
                     r:0,
                     g:128,
@@ -129,18 +131,17 @@ function renderBackground(){
                 }    
             }    
 
-            var pos = (y * width + x) * 4; // position in buffer based on x and y
-            buffer[pos  ] = color.r;           // some R value [0, 255]
-            buffer[pos+1] = color.g;           // some G value
-            buffer[pos+2] = color.b;           // some B value
-            buffer[pos+3] = 255;           // set alpha channel
+            var pos = (y * width + x) * 4;
+            buffer[pos  ] = color.r;       
+            buffer[pos+1] = color.g;        
+            buffer[pos+2] = color.b;         
+            buffer[pos+3] = 255;        
         }
     }
 
 
 
 
-        // create imageData object
         var idata = bc.createImageData(width, height);
 
         newCanvas = document.createElement("canvas");
@@ -151,7 +152,6 @@ function renderBackground(){
 
 
 
-        // set our buffer as source
         idata.data.set(buffer);
 
         newCanvas.getContext("2d").putImageData(idata, 0, 0);
@@ -246,17 +246,17 @@ function generateMap(){
         let tmpMapX = []
         for(let y = 0; y < 150; y++){
             let perlinNoise = makePositive(parseInt(perlin.get(x/60, y/60,seed) * 255 * 2))
-            if(x < 30){
-                perlinNoise -= ((30-x))*10
+            if(x < 40){
+                perlinNoise -= ((40-x))*5
             }
-            if(y < 30){
-                perlinNoise -= ((30-y))*10
+            if(y < 40){
+                perlinNoise -= ((40-y))*5
             }
-            if(x > 120){
-                perlinNoise -= (x-120)*10
+            if(x > 110){
+                perlinNoise -= (x-110)*5
             }
-            if(y > 120){
-                perlinNoise -= (y-120)*10
+            if(y > 110){
+                perlinNoise -= (y-110)*5
             }
             
             if(perlinNoise < 0){
