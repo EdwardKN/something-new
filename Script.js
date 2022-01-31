@@ -10,8 +10,6 @@ backCanvas.height = 1080;
 foreCanvas.width = 1920;
 foreCanvas.height = 1080;
 
-perlin.seed(10)
-
 var map = [];
 
 var width = 150
@@ -20,6 +18,7 @@ var buffer = new Uint8ClampedArray(width * height * 4);
 var newCanvas;
 
 var pixelSize = 50;
+var seed = Math.floor(Math.random() * 1000000000)
 
 var player = {
     x:-1000,
@@ -57,7 +56,7 @@ foreCanvas.addEventListener("mousemove",function(event){
 })
 
 window.addEventListener("click",function(event){
-
+    document.documentElement.requestFullscreen();
 })
 window.addEventListener("keydown",function(event){
     console.log(event.code);
@@ -104,25 +103,25 @@ function renderBackground(){
                 b:128
             }
         
-            if(map[x][y] > 210){
+            if(map[x][y] > 180 && map[x][y]<255){
                 color = {
                     r:128,
                     g:128,
                     b:128
                 }
-            }else if(map[x][y] > 80){
+            }else if(map[x][y] > 60){
                 color = {
                     r:0,
                     g:128,
                     b:0
                 }
-            }else if(map[x][y] > 40){
+            }else if(map[x][y] > 30){
                 color = {
                     r:194,
                     g:178,
                     b:128
                 }    
-            }else{
+            }else if(map[x][y] < 255){
                 color = {
                     r:0,
                     g:0,
@@ -170,7 +169,8 @@ function renderForeground(){
     fc.fillStyle = "black";
     fc.fillRect(1920/2 - 25, 1080/2 - 50, 50,100)
 
-    fc.fillRect(mouse.blockX,mouse.blockY,50,50)
+    
+    fc.strokeRect(mouse.blockX,mouse.blockY,50,50)
 
 }
 
@@ -245,7 +245,7 @@ function generateMap(){
     for(let x = 0; x < 150; x++){
         let tmpMapX = []
         for(let y = 0; y < 150; y++){
-            let perlinNoise = makePositive(parseInt(perlin.get(x/60, y/60) * 255 * 2))
+            let perlinNoise = makePositive(parseInt(perlin.get(x/60, y/60,seed) * 255 * 2))
             if(x < 30){
                 perlinNoise -= ((30-x))*10
             }
